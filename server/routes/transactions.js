@@ -13,6 +13,56 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get monthly summary
+router.get('/monthly-summary', async (req, res) => {
+  try {
+    const monthlySummary = await Transaction.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$timestamp" },
+            month: { $month: "$timestamp" },
+            type: "$type"
+          },
+          total: { $sum: "$amount" }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: "$_id.year",
+            month: "$_id.month"
+          },
+          summary: {
+            $push: {
+              type: "$_id.type",
+              total: "$total"
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          year: "$_id.year",
+          month: "$_id.month",
+          summary: 1
+        }
+      },
+      {
+        $sort: {
+          year: -1,
+          month: -1
+        }
+      }
+    ]);
+
+    res.status(200).json(monthlySummary);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching monthly summary', error: error.message });
+  }
+});
+
 // Get a single transaction by ID
 router.get('/:id', async (req, res) => {
   try {

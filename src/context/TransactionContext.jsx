@@ -3,10 +3,11 @@ import axios from 'axios';
 
 const TransactionContext = createContext();
 
-const API_URL = 'http://localhost:5000/api/transactions';
+const API_URL = 'http://127.0.0.1:5000/api/transactions';
 
 const initialState = {
   transactions: [],
+  monthlySummary: [],
   loading: false,
   error: null,
   totalCredit: 0,
@@ -27,6 +28,11 @@ const transactionReducer = (state, action) => {
         totalCredit: calculateTotal(action.payload, 'credit'),
         totalDebit: calculateTotal(action.payload, 'debit'),
         balance: calculateTotal(action.payload, 'credit') - calculateTotal(action.payload, 'debit'),
+      };
+    case 'FETCH_MONTHLY_SUMMARY_SUCCESS':
+      return {
+        ...state,
+        monthlySummary: action.payload,
       };
     case 'FETCH_ERROR':
       return { ...state, loading: false, error: action.payload };
@@ -77,6 +83,7 @@ export const TransactionProvider = ({ children }) => {
 
   useEffect(() => {
     fetchTransactions();
+    fetchMonthlySummary();
   }, []);
 
   const fetchTransactions = async () => {
@@ -90,10 +97,20 @@ export const TransactionProvider = ({ children }) => {
     }
   };
 
+  const fetchMonthlySummary = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/monthly-summary`);
+      dispatch({ type: 'FETCH_MONTHLY_SUMMARY_SUCCESS', payload: response.data });
+    } catch (error) {
+      console.error('Error fetching monthly summary:', error);
+    }
+  };
+
   const addTransaction = async (transaction) => {
     try {
       const response = await axios.post(API_URL, transaction);
       dispatch({ type: 'ADD_TRANSACTION', payload: response.data });
+      fetchMonthlySummary(); // Refresh monthly summary after adding a transaction
       return response.data;
     } catch (error) {
       console.error('Error adding transaction:', error);
@@ -105,6 +122,7 @@ export const TransactionProvider = ({ children }) => {
     try {
       const response = await axios.put(`${API_URL}/${id}`, transaction);
       dispatch({ type: 'UPDATE_TRANSACTION', payload: response.data });
+      fetchMonthlySummary(); // Refresh monthly summary after updating a transaction
       return response.data;
     } catch (error) {
       console.error('Error updating transaction:', error);
@@ -116,6 +134,7 @@ export const TransactionProvider = ({ children }) => {
     try {
       await axios.delete(`${API_URL}/${id}`);
       dispatch({ type: 'DELETE_TRANSACTION', payload: id });
+      fetchMonthlySummary(); // Refresh monthly summary after deleting a transaction
     } catch (error) {
       console.error('Error deleting transaction:', error);
       throw error;
@@ -127,6 +146,7 @@ export const TransactionProvider = ({ children }) => {
       value={{
         ...state,
         fetchTransactions,
+        fetchMonthlySummary,
         addTransaction,
         updateTransaction,
         deleteTransaction,

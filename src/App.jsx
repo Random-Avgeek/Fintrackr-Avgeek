@@ -4,6 +4,7 @@ import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
+import Reports from './pages/Reports'; // Import the Reports component
 import { TransactionProvider } from './context/TransactionContext';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/transactions" element={<Transactions />} />
+                <Route path="/reports" element={<Reports />} /> {/* Add the new route */}
               </Routes>
             </main>
           </div>
