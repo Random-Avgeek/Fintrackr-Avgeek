@@ -1,12 +1,14 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, ListPlus, PieChart, Settings } from 'lucide-react';
+import { Home, ListPlus, PieChart, Settings, Target, Tag } from 'lucide-react';
 
 const Sidebar = () => {
   const navLinks = [
     { to: '/', icon: <Home size={20} />, text: 'Dashboard' },
     { to: '/transactions', icon: <ListPlus size={20} />, text: 'Transactions' },
+    { to: '/budget', icon: <Target size={20} />, text: 'Budget' },
     { to: '/reports', icon: <PieChart size={20} />, text: 'Reports' },
+    { to: '/categories', icon: <Tag size={20} />, text: 'Categories' },
     { to: '/settings', icon: <Settings size={20} />, text: 'Settings' },
   ];
 
@@ -41,7 +43,7 @@ const Sidebar = () => {
 
       {/* Mobile bottom nav */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-10 transition-colors duration-700">
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-6">
           {navLinks.map((link) => (
             <NavLink
               key={link.to}

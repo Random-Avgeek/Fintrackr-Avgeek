@@ -2,7 +2,7 @@ import React from 'react';
 import { X } from 'lucide-react';
 import TransactionForm from './TransactionForm';
 
-const TransactionModal = ({ isOpen, onClose, transaction, onSubmit }) => {
+const TransactionModal = ({ isOpen, onClose, transaction, categories, onSubmit }) => {
   if (!isOpen) return null;
 
   const handleSubmit = (data) => {
@@ -36,6 +36,7 @@ const TransactionModal = ({ isOpen, onClose, transaction, onSubmit }) => {
             </div>
             <TransactionForm
               transaction={transaction}
+              categories={categories}
               onSubmit={handleSubmit}
               onCancel={onClose}
             />

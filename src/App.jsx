@@ -4,7 +4,9 @@ import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
+import Budget from './pages/Budget';
 import Reports from './pages/Reports';
+import Categories from './pages/Categories';
 import Settings from './pages/Settings';
 import { TransactionProvider } from './context/TransactionContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -22,7 +24,9 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/transactions" element={<Transactions />} />
+                  <Route path="/budget" element={<Budget />} />
                   <Route path="/reports" element={<Reports />} />
+                  <Route path="/categories" element={<Categories />} />
                   <Route path="/settings" element={<Settings />} />
                 </Routes>
               </main>

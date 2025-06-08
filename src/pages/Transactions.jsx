@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTransactionContext } from '../context/TransactionContext';
 import TransactionList from '../components/transactions/TransactionList';
 import TransactionFilter from '../components/transactions/TransactionFilter';
@@ -8,20 +8,43 @@ import { PlusCircle } from 'lucide-react';
 const Transactions = () => {
   const { 
     transactions, 
+    pagination,
     categories,
     addTransaction, 
     updateTransaction, 
-    deleteTransaction 
+    deleteTransaction,
+    fetchTransactions
   } = useTransactionContext();
 
-  const [filter, setFilter] = useState({ type: '', category: '' });
+  const [filter, setFilter] = useState({ 
+    type: '', 
+    category: '', 
+    startDate: '', 
+    endDate: '',
+    sortBy: 'timestamp',
+    sortOrder: 'desc'
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTransaction, setCurrentTransaction] = useState(null);
+
+  useEffect(() => {
+    const params = {};
+    Object.keys(filter).forEach(key => {
+      if (filter[key]) params[key] = filter[key];
+    });
+    fetchTransactions(params);
+  }, [filter]);
 
   const handleAddTransaction = async (data) => {
     try {
       await addTransaction(data);
       setIsModalOpen(false);
+      // Refresh transactions with current filters
+      const params = {};
+      Object.keys(filter).forEach(key => {
+        if (filter[key]) params[key] = filter[key];
+      });
+      fetchTransactions(params);
     } catch (error) {
       console.error('Error adding transaction:', error);
     }
@@ -37,6 +60,12 @@ const Transactions = () => {
       await updateTransaction(currentTransaction._id, data);
       setIsModalOpen(false);
       setCurrentTransaction(null);
+      // Refresh transactions with current filters
+      const params = {};
+      Object.keys(filter).forEach(key => {
+        if (filter[key]) params[key] = filter[key];
+      });
+      fetchTransactions(params);
     } catch (error) {
       console.error('Error updating transaction:', error);
     }
@@ -46,6 +75,12 @@ const Transactions = () => {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
       try {
         await deleteTransaction(id);
+        // Refresh transactions with current filters
+        const params = {};
+        Object.keys(filter).forEach(key => {
+          if (filter[key]) params[key] = filter[key];
+        });
+        fetchTransactions(params);
       } catch (error) {
         console.error('Error deleting transaction:', error);
       }
@@ -65,6 +100,15 @@ const Transactions = () => {
     setCurrentTransaction(null);
   };
 
+  const handleSearch = (searchTerm) => {
+    setFilter({ ...filter, search: searchTerm });
+  };
+
+  const handlePageChange = (page) => {
+    const params = { ...filter, page };
+    fetchTransactions(params);
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -82,14 +126,16 @@ const Transactions = () => {
         filter={filter}
         setFilter={setFilter}
         categories={categories}
+        onSearch={handleSearch}
       />
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden transition-colors duration-300">
         <TransactionList 
           transactions={transactions}
+          pagination={pagination}
           onEdit={handleEditTransaction}
           onDelete={handleDeleteTransaction}
-          filter={filter}
+          onPageChange={handlePageChange}
         />
       </div>
 
@@ -97,6 +143,7 @@ const Transactions = () => {
         isOpen={isModalOpen}
         onClose={handleModalClose}
         transaction={currentTransaction}
+        categories={categories}
         onSubmit={handleModalSubmit}
       />
     </div>

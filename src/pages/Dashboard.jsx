@@ -12,6 +12,7 @@ const Dashboard = () => {
     totalCredit, 
     totalDebit, 
     balance,
+    categories,
     addTransaction
   } = useTransactionContext();
 
@@ -53,6 +54,7 @@ const Dashboard = () => {
       <TransactionModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        categories={categories}
         onSubmit={handleAddTransaction}
       />
     </div>

@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import transactionRoutes from './routes/transactions.js';
+import budgetRoutes from './routes/budgets.js';
+import categoryRoutes from './routes/categories.js';
 
 // Load environment variables
 dotenv.config();
@@ -16,6 +18,8 @@ app.use(cors());
 
 // Routes
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/budgets', budgetRoutes);
+app.use('/api/categories', categoryRoutes);
 
 // Root route
 app.get('/', (req, res) => {

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { X, Check } from 'lucide-react';
 
-const TransactionForm = ({ transaction, onSubmit, onCancel }) => {
+const TransactionForm = ({ transaction, categories, onSubmit, onCancel }) => {
   const initialFormData = {
     type: 'debit',
     amount: '',
-    category: 'Food',
+    category: '',
     description: '',
   };
 
@@ -60,6 +60,13 @@ const TransactionForm = ({ transaction, onSubmit, onCancel }) => {
       });
     }
   };
+
+  // Filter categories based on transaction type
+  const availableCategories = categories.filter(cat => 
+    cat.type === 'both' || 
+    (formData.type === 'credit' && (cat.type === 'income' || cat.type === 'both')) ||
+    (formData.type === 'debit' && (cat.type === 'expense' || cat.type === 'both'))
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -122,12 +129,12 @@ const TransactionForm = ({ transaction, onSubmit, onCancel }) => {
           onChange={handleChange}
           className={`input ${errors.category ? 'border-danger-500 focus:ring-danger-500' : ''}`}
         >
-          <option value="Food">Food</option>
-          <option value="Travel">Travel</option>
-          <option value="Billing">Billing</option>
-          <option value="Shopping">Shopping</option>
-          <option value="Entertainment">Entertainment</option>
-          <option value="Others">Others</option>
+          <option value="">Select a category</option>
+          {availableCategories.map((category) => (
+            <option key={category._id} value={category.name}>
+              {category.name}
+            </option>
+          ))}
         </select>
         {errors.category && (
           <p className="mt-1 text-xs text-danger-600 dark:text-danger-400 transition-colors duration-300">{errors.category}</p>

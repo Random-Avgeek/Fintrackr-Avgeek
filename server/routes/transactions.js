@@ -3,11 +3,62 @@ import Transaction from '../models/Transaction.js';
 
 const router = express.Router();
 
-// Get all transactions
+// Get all transactions with advanced filtering and pagination
 router.get('/', async (req, res) => {
   try {
-    const transactions = await Transaction.find().sort({ timestamp: -1 });
-    res.status(200).json(transactions);
+    const { 
+      page = 1, 
+      limit = 50, 
+      type, 
+      category, 
+      search, 
+      sortBy = 'timestamp', 
+      sortOrder = 'desc',
+      startDate,
+      endDate
+    } = req.query;
+
+    // Build filter object
+    const filter = {};
+    if (type) filter.type = type;
+    if (category) filter.category = category;
+    if (search) {
+      filter.$or = [
+        { category: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+    if (startDate || endDate) {
+      filter.timestamp = {};
+      if (startDate) filter.timestamp.$gte = new Date(startDate);
+      if (endDate) filter.timestamp.$lte = new Date(endDate);
+    }
+
+    // Build sort object
+    const sort = {};
+    sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    // Calculate pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Execute query
+    const transactions = await Transaction.find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    // Get total count for pagination
+    const total = await Transaction.countDocuments(filter);
+
+    res.status(200).json({
+      transactions,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / parseInt(limit))
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching transactions', error: error.message });
   }
@@ -60,6 +111,97 @@ router.get('/monthly-summary', async (req, res) => {
     res.status(200).json(monthlySummary);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching monthly summary', error: error.message });
+  }
+});
+
+// Get yearly summary
+router.get('/yearly-summary', async (req, res) => {
+  try {
+    const yearlySummary = await Transaction.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$timestamp" },
+            type: "$type"
+          },
+          total: { $sum: "$amount" }
+        }
+      },
+      {
+        $group: {
+          _id: "$_id.year",
+          summary: {
+            $push: {
+              type: "$_id.type",
+              total: "$total"
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          year: "$_id",
+          summary: 1
+        }
+      },
+      {
+        $sort: {
+          year: -1
+        }
+      }
+    ]);
+
+    res.status(200).json(yearlySummary);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching yearly summary', error: error.message });
+  }
+});
+
+// Get category breakdown
+router.get('/category-breakdown', async (req, res) => {
+  try {
+    const { startDate, endDate, type } = req.query;
+    
+    const filter = {};
+    if (type) filter.type = type;
+    if (startDate || endDate) {
+      filter.timestamp = {};
+      if (startDate) filter.timestamp.$gte = new Date(startDate);
+      if (endDate) filter.timestamp.$lte = new Date(endDate);
+    }
+
+    const breakdown = await Transaction.aggregate([
+      { $match: filter },
+      {
+        $group: {
+          _id: {
+            category: "$category",
+            type: "$type"
+          },
+          total: { $sum: "$amount" },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          category: "$_id.category",
+          type: "$_id.type",
+          total: 1,
+          count: 1
+        }
+      },
+      {
+        $sort: {
+          total: -1
+        }
+      }
+    ]);
+
+    res.status(200).json(breakdown);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching category breakdown', error: error.message });
   }
 });
 
