@@ -68,7 +68,7 @@ const Transactions = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Transactions</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">Transactions</h1>
         <button 
           className="btn btn-primary flex items-center"
           onClick={() => setIsModalOpen(true)}
@@ -84,7 +84,7 @@ const Transactions = () => {
         categories={categories}
       />
 
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden transition-colors duration-300">
         <TransactionList 
           transactions={transactions}
           onEdit={handleEditTransaction}

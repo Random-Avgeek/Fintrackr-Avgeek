@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { useTheme } from '../../context/ThemeContext';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const CategoryChart = ({ transactions }) => {
+  const { isDarkMode } = useTheme();
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [{
@@ -63,42 +65,50 @@ const CategoryChart = ({ transactions }) => {
     });
   }, [transactions]);
 
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          boxWidth: 12,
+          padding: 15,
+          font: {
+            size: 11
+          },
+          color: isDarkMode ? '#d1d5db' : '#374151'
+        }
+      },
+      tooltip: {
+        backgroundColor: isDarkMode ? '#374151' : '#ffffff',
+        titleColor: isDarkMode ? '#f9fafb' : '#111827',
+        bodyColor: isDarkMode ? '#d1d5db' : '#374151',
+        borderColor: isDarkMode ? '#6b7280' : '#e5e7eb',
+        borderWidth: 1,
+        callbacks: {
+          label: function(context) {
+            const label = context.label || '';
+            const value = context.parsed || 0;
+            return `${label}: $${value.toFixed(2)}`;
+          }
+        }
+      }
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-card p-5">
-      <h3 className="text-base font-medium text-gray-700 mb-4">Expense by Category</h3>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-card p-5 transition-colors duration-300">
+      <h3 className="text-base font-medium text-gray-700 dark:text-gray-300 mb-4 transition-colors duration-300">Expense by Category</h3>
       <div className="h-60">
         {chartData.labels.length > 0 ? (
           <Pie 
             data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  position: 'bottom',
-                  labels: {
-                    boxWidth: 12,
-                    padding: 15,
-                    font: {
-                      size: 11
-                    }
-                  }
-                },
-                tooltip: {
-                  callbacks: {
-                    label: function(context) {
-                      const label = context.label || '';
-                      const value = context.parsed || 0;
-                      return `${label}: $${value.toFixed(2)}`;
-                    }
-                  }
-                }
-              }
-            }}
+            options={chartOptions}
           />
         ) : (
           <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500 text-sm">No expense data available</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm transition-colors duration-300">No expense data available</p>
           </div>
         )}
       </div>

@@ -20,18 +20,32 @@ const Header = () => {
             </Link>
           </div>
           
-          <div className="hidden md:flex items-center space-x-4">
-            <div className="px-4 py-2 rounded-xl bg-success-50/90 dark:bg-success-900/40 text-success-700 dark:text-success-300 flex items-center backdrop-blur-sm transition-all duration-600 hover:scale-105 hover:shadow-glow-success border border-success-200/50 dark:border-success-700/50">
-              <RupeeIcon size={16} className="mr-2 animate-pulse-gentle" />
-              <span className="font-semibold">Income: ₹{totalCredit.toFixed(2)}</span>
-            </div>
-            <div className="px-4 py-2 rounded-xl bg-danger-50/90 dark:bg-danger-900/40 text-danger-700 dark:text-danger-300 flex items-center backdrop-blur-sm transition-all duration-600 hover:scale-105 hover:shadow-glow-danger border border-danger-200/50 dark:border-danger-700/50">
-              <RupeeIcon size={16} className="mr-2 animate-pulse-gentle" />
-              <span className="font-semibold">Expense: ₹{totalDebit.toFixed(2)}</span>
-            </div>
-            <div className="px-4 py-2 rounded-xl bg-primary-50/90 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 flex items-center backdrop-blur-sm transition-all duration-600 hover:scale-105 hover:shadow-glow-primary border border-primary-200/50 dark:border-primary-700/50">
-              <RupeeIcon size={16} className="mr-2 animate-pulse-gentle" />
-              <span className="font-semibold">Balance: ₹{balance.toFixed(2)}</span>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={toggleDarkMode}
+              className="p-2 rounded-lg bg-white/20 dark:bg-gray-800/20 backdrop-blur-sm border border-gray-200/30 dark:border-gray-700/30 hover:bg-white/30 dark:hover:bg-gray-800/30 transition-all duration-300 hover:scale-105"
+              aria-label="Toggle dark mode"
+            >
+              {isDarkMode ? (
+                <Sun className="h-5 w-5 text-yellow-500" />
+              ) : (
+                <Moon className="h-5 w-5 text-gray-600" />
+              )}
+            </button>
+            
+            <div className="hidden md:flex items-center space-x-4">
+              <div className="px-4 py-2 rounded-xl bg-success-50/90 dark:bg-success-900/40 text-success-700 dark:text-success-300 flex items-center backdrop-blur-sm transition-all duration-600 hover:scale-105 hover:shadow-glow-success border border-success-200/50 dark:border-success-700/50">
+                <RupeeIcon size={16} className="mr-2 animate-pulse-gentle" />
+                <span className="font-semibold">Income: ₹{totalCredit.toFixed(2)}</span>
+              </div>
+              <div className="px-4 py-2 rounded-xl bg-danger-50/90 dark:bg-danger-900/40 text-danger-700 dark:text-danger-300 flex items-center backdrop-blur-sm transition-all duration-600 hover:scale-105 hover:shadow-glow-danger border border-danger-200/50 dark:border-danger-700/50">
+                <RupeeIcon size={16} className="mr-2 animate-pulse-gentle" />
+                <span className="font-semibold">Expense: ₹{totalDebit.toFixed(2)}</span>
+              </div>
+              <div className="px-4 py-2 rounded-xl bg-primary-50/90 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 flex items-center backdrop-blur-sm transition-all duration-600 hover:scale-105 hover:shadow-glow-primary border border-primary-200/50 dark:border-primary-700/50">
+                <RupeeIcon size={16} className="mr-2 animate-pulse-gentle" />
+                <span className="font-semibold">Balance: ₹{balance.toFixed(2)}</span>
+              </div>
             </div>
           </div>
         </div>

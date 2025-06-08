@@ -73,9 +73,9 @@ const TransactionForm = ({ transaction, onSubmit, onCancel }) => {
               value="credit"
               checked={formData.type === 'credit'}
               onChange={handleChange}
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
             />
-            <span className="ml-2 text-sm text-gray-700">Income</span>
+            <span className="ml-2 text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300">Income</span>
           </label>
           <label className="flex items-center">
             <input
@@ -84,9 +84,9 @@ const TransactionForm = ({ transaction, onSubmit, onCancel }) => {
               value="debit"
               checked={formData.type === 'debit'}
               onChange={handleChange}
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
             />
-            <span className="ml-2 text-sm text-gray-700">Expense</span>
+            <span className="ml-2 text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300">Expense</span>
           </label>
         </div>
       </div>
@@ -107,7 +107,7 @@ const TransactionForm = ({ transaction, onSubmit, onCancel }) => {
           className={`input ${errors.amount ? 'border-danger-500 focus:ring-danger-500' : ''}`}
         />
         {errors.amount && (
-          <p className="mt-1 text-xs text-danger-600">{errors.amount}</p>
+          <p className="mt-1 text-xs text-danger-600 dark:text-danger-400 transition-colors duration-300">{errors.amount}</p>
         )}
       </div>
 
@@ -130,7 +130,7 @@ const TransactionForm = ({ transaction, onSubmit, onCancel }) => {
           <option value="Others">Others</option>
         </select>
         {errors.category && (
-          <p className="mt-1 text-xs text-danger-600">{errors.category}</p>
+          <p className="mt-1 text-xs text-danger-600 dark:text-danger-400 transition-colors duration-300">{errors.category}</p>
         )}
       </div>
 

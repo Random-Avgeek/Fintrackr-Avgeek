@@ -29,7 +29,7 @@ const Dashboard = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">Dashboard</h1>
         <button 
           className="btn btn-primary flex items-center"
           onClick={() => setIsModalOpen(true)}
