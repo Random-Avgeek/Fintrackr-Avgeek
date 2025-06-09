@@ -1,7 +1,11 @@
 import express from 'express';
 import Transaction from '../models/Transaction.js';
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
+
+// Apply authentication middleware to all routes
+router.use(auth);
 
 // Get all transactions with advanced filtering and pagination
 router.get('/', async (req, res) => {
@@ -18,8 +22,8 @@ router.get('/', async (req, res) => {
       endDate
     } = req.query;
 
-    // Build filter object
-    const filter = {};
+    // Build filter object - always include userId
+    const filter = { userId: req.user._id };
     if (type) filter.type = type;
     if (category) filter.category = category;
     if (search) {
@@ -68,6 +72,9 @@ router.get('/', async (req, res) => {
 router.get('/monthly-summary', async (req, res) => {
   try {
     const monthlySummary = await Transaction.aggregate([
+      {
+        $match: { userId: req.user._id }
+      },
       {
         $group: {
           _id: {
@@ -119,6 +126,9 @@ router.get('/yearly-summary', async (req, res) => {
   try {
     const yearlySummary = await Transaction.aggregate([
       {
+        $match: { userId: req.user._id }
+      },
+      {
         $group: {
           _id: {
             year: { $year: "$timestamp" },
@@ -163,7 +173,7 @@ router.get('/category-breakdown', async (req, res) => {
   try {
     const { startDate, endDate, type } = req.query;
     
-    const filter = {};
+    const filter = { userId: req.user._id };
     if (type) filter.type = type;
     if (startDate || endDate) {
       filter.timestamp = {};
@@ -208,7 +218,10 @@ router.get('/category-breakdown', async (req, res) => {
 // Get a single transaction by ID
 router.get('/:id', async (req, res) => {
   try {
-    const transaction = await Transaction.findById(req.params.id);
+    const transaction = await Transaction.findOne({ 
+      _id: req.params.id, 
+      userId: req.user._id 
+    });
     
     if (!transaction) {
       return res.status(404).json({ message: 'Transaction not found' });
@@ -241,6 +254,7 @@ router.post('/', async (req, res) => {
     }
     
     const newTransaction = new Transaction({
+      userId: req.user._id,
       type,
       amount,
       category,
@@ -275,8 +289,8 @@ router.put('/:id', async (req, res) => {
       return res.status(400).json({ message: 'Amount must be a positive number' });
     }
     
-    const updatedTransaction = await Transaction.findByIdAndUpdate(
-      req.params.id,
+    const updatedTransaction = await Transaction.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user._id },
       { type, amount, category, description },
       { new: true, runValidators: true }
     );
@@ -294,7 +308,10 @@ router.put('/:id', async (req, res) => {
 // Delete a transaction
 router.delete('/:id', async (req, res) => {
   try {
-    const deletedTransaction = await Transaction.findByIdAndDelete(req.params.id);
+    const deletedTransaction = await Transaction.findOneAndDelete({ 
+      _id: req.params.id, 
+      userId: req.user._id 
+    });
     
     if (!deletedTransaction) {
       return res.status(404).json({ message: 'Transaction not found' });

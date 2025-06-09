@@ -1,10 +1,16 @@
 import mongoose from 'mongoose';
 
 const categorySchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: function() {
+      return !this.isDefault;
+    }
+  },
   name: { 
     type: String, 
     required: true,
-    unique: true,
     trim: true
   },
   type: {
@@ -28,6 +34,15 @@ const categorySchema = new mongoose.Schema({
     type: Date, 
     default: Date.now 
   }
+});
+
+// Ensure unique category names per user (excluding default categories)
+categorySchema.index({ 
+  userId: 1, 
+  name: 1 
+}, { 
+  unique: true,
+  partialFilterExpression: { isDefault: { $ne: true } }
 });
 
 const Category = mongoose.model('Category', categorySchema);

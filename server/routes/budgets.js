@@ -1,14 +1,18 @@
 import express from 'express';
 import Budget from '../models/Budget.js';
 import Transaction from '../models/Transaction.js';
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
+
+// Apply authentication middleware to all routes
+router.use(auth);
 
 // Get all budgets
 router.get('/', async (req, res) => {
   try {
     const { year, month } = req.query;
-    let query = {};
+    let query = { userId: req.user._id };
     
     if (year) query.year = parseInt(year);
     if (month) query.month = parseInt(month);
@@ -27,6 +31,7 @@ router.get('/comparison', async (req, res) => {
     
     // Get budgets for the specified period
     const budgets = await Budget.find({
+      userId: req.user._id,
       $or: [
         { period: 'yearly', year: parseInt(year) },
         { period: 'monthly', year: parseInt(year), month: parseInt(month) }
@@ -40,6 +45,7 @@ router.get('/comparison', async (req, res) => {
     const actualSpending = await Transaction.aggregate([
       {
         $match: {
+          userId: req.user._id,
           type: 'debit',
           timestamp: { $gte: startDate, $lte: endDate }
         }
@@ -87,7 +93,13 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Month is required for monthly budgets' });
     }
     
-    const budgetData = { category, amount, period, year };
+    const budgetData = { 
+      userId: req.user._id,
+      category, 
+      amount, 
+      period, 
+      year 
+    };
     if (period === 'monthly') {
       budgetData.month = month;
     }
@@ -119,8 +131,8 @@ router.put('/:id', async (req, res) => {
       updateData.month = month;
     }
     
-    const updatedBudget = await Budget.findByIdAndUpdate(
-      req.params.id,
+    const updatedBudget = await Budget.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user._id },
       updateData,
       { new: true, runValidators: true }
     );
@@ -138,7 +150,10 @@ router.put('/:id', async (req, res) => {
 // Delete a budget
 router.delete('/:id', async (req, res) => {
   try {
-    const deletedBudget = await Budget.findByIdAndDelete(req.params.id);
+    const deletedBudget = await Budget.findOneAndDelete({ 
+      _id: req.params.id, 
+      userId: req.user._id 
+    });
     
     if (!deletedBudget) {
       return res.status(404).json({ message: 'Budget not found' });

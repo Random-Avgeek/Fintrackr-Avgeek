@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import transactionRoutes from './routes/transactions.js';
 import budgetRoutes from './routes/budgets.js';
 import categoryRoutes from './routes/categories.js';
+import authRoutes from './routes/auth.js';
 
 // Load environment variables
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(cors());
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -31,7 +33,7 @@ mongoose
   .connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/fintrackr')
   .then(() => {
     console.log('Connected to MongoDB');
-    app.listen(PORT, '0.0.0.0', () => { // Modified line
+    app.listen(PORT, () => {
       console.log(`Server running on port: ${PORT}`);
     });
   })

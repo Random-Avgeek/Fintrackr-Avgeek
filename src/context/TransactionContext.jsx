@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from './AuthContext';
 
 const TransactionContext = createContext();
 
-const API_URL = 'https://avgeek-fintrackr-services.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://avgeek-fintrackr-services.onrender.com/api';
 
 const initialState = {
   transactions: [],
@@ -113,6 +114,8 @@ const transactionReducer = (state, action) => {
         ...state,
         categories: state.categories.filter(category => category._id !== action.payload)
       };
+    case 'RESET_STATE':
+      return initialState;
     default:
       return state;
   }
@@ -126,17 +129,25 @@ const calculateTotal = (transactions, type) => {
 
 export const TransactionProvider = ({ children }) => {
   const [state, dispatch] = useReducer(transactionReducer, initialState);
+  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
-    fetchTransactions();
-    fetchMonthlySummary();
-    fetchYearlySummary();
-    fetchCategories();
-    fetchBudgets();
-    fetchBudgetComparison();
-  }, []);
+    if (isAuthenticated && user) {
+      fetchTransactions();
+      fetchMonthlySummary();
+      fetchYearlySummary();
+      fetchCategories();
+      fetchBudgets();
+      fetchBudgetComparison();
+    } else {
+      // Reset state when user logs out
+      dispatch({ type: 'RESET_STATE' });
+    }
+  }, [isAuthenticated, user]);
 
   const fetchTransactions = async (params = {}) => {
+    if (!isAuthenticated) return;
+    
     dispatch({ type: 'FETCH_START' });
     try {
       const queryParams = new URLSearchParams(params).toString();
@@ -149,6 +160,8 @@ export const TransactionProvider = ({ children }) => {
   };
 
   const fetchMonthlySummary = async () => {
+    if (!isAuthenticated) return;
+    
     try {
       const response = await axios.get(`${API_URL}/transactions/monthly-summary`);
       dispatch({ type: 'FETCH_MONTHLY_SUMMARY_SUCCESS', payload: response.data });
@@ -158,6 +171,8 @@ export const TransactionProvider = ({ children }) => {
   };
 
   const fetchYearlySummary = async () => {
+    if (!isAuthenticated) return;
+    
     try {
       const response = await axios.get(`${API_URL}/transactions/yearly-summary`);
       dispatch({ type: 'FETCH_YEARLY_SUMMARY_SUCCESS', payload: response.data });
@@ -167,6 +182,8 @@ export const TransactionProvider = ({ children }) => {
   };
 
   const fetchCategoryBreakdown = async (params = {}) => {
+    if (!isAuthenticated) return;
+    
     try {
       const queryParams = new URLSearchParams(params).toString();
       const response = await axios.get(`${API_URL}/transactions/category-breakdown?${queryParams}`);
@@ -177,6 +194,8 @@ export const TransactionProvider = ({ children }) => {
   };
 
   const fetchBudgets = async (params = {}) => {
+    if (!isAuthenticated) return;
+    
     try {
       const queryParams = new URLSearchParams(params).toString();
       const response = await axios.get(`${API_URL}/budgets?${queryParams}`);
@@ -187,6 +206,8 @@ export const TransactionProvider = ({ children }) => {
   };
 
   const fetchBudgetComparison = async (params = {}) => {
+    if (!isAuthenticated) return;
+    
     try {
       const queryParams = new URLSearchParams(params).toString();
       const response = await axios.get(`${API_URL}/budgets/comparison?${queryParams}`);
@@ -197,6 +218,8 @@ export const TransactionProvider = ({ children }) => {
   };
 
   const fetchCategories = async () => {
+    if (!isAuthenticated) return;
+    
     try {
       const response = await axios.get(`${API_URL}/categories`);
       dispatch({ type: 'FETCH_CATEGORIES_SUCCESS', payload: response.data });
