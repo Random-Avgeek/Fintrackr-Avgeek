@@ -49,7 +49,7 @@ const Sidebar = () => {
               key={link.to}
               to={link.to}
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center py-2 text-xs font-medium transition-colors duration-200 ${
+                `flex flex-col items-center justify-center py-2 text-xs font-small transition-colors duration-200 ${
                   isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400'
                 }`
               }
