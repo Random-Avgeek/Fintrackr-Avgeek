@@ -31,7 +31,7 @@ mongoose
   .connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/fintrackr')
   .then(() => {
     console.log('Connected to MongoDB');
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => { // Modified line
       console.log(`Server running on port: ${PORT}`);
     });
   })
