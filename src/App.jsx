@@ -14,13 +14,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute'; // Assumed to exi
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { TransactionProvider } from './context/TransactionContext';
 import { ThemeProvider } from './context/ThemeContext';
-
-/**
- * AppContent component handles the main routing logic and conditional rendering
- * based on the user's authentication state.
- */
 const AppContent = () => {
-  // Access authentication state and loading status from the AuthContext
   const { isAuthenticated, loading } = useAuth();
 
   // Display a loading spinner while the authentication state is being determined

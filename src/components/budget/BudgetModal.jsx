@@ -114,7 +114,7 @@ const BudgetModal = ({ isOpen, onClose, budget, categories, onSubmit }) => {
 
               <div className="form-group">
                 <label htmlFor="amount" className="label">
-                  Budget Amount ($)
+                  Budget Amount (₹)
                 </label>
                 <input
                   type="number"

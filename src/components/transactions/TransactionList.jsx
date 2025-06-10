@@ -1,6 +1,7 @@
 import React from 'react';
-import { Edit2, Trash2, DollarSign, ChevronLeft, ChevronRight } from 'lucide-react';
-import { formatDate } from '../../utils/helpers';
+import { Edit2, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { formatDate, formatRupees } from '../../utils/helpers';
+import RupeeIcon from '../icons/RupeeIcon';
 
 const TransactionList = ({ 
   transactions, 
@@ -60,7 +61,7 @@ const TransactionList = ({
                       ? 'text-success-600 dark:text-success-400' 
                       : 'text-danger-600 dark:text-danger-400'
                   }`}>
-                    <DollarSign className="h-4 w-4 mr-1" />
+                    <RupeeIcon className="h-4 w-4 mr-1" />
                     <span className="font-medium">
                       {transaction.type === 'credit' ? '+' : '-'}{transaction.amount.toFixed(2)}
                     </span>

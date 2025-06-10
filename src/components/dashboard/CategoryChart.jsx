@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { useTheme } from '../../context/ThemeContext';
+import { formatRupees } from '../../utils/helpers'; // <-- Add this import
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -90,7 +91,7 @@ const CategoryChart = ({ transactions }) => {
           label: function(context) {
             const label = context.label || '';
             const value = context.parsed || 0;
-            return `${label}: $${value.toFixed(2)}`;
+            return `${label}: ${formatRupees(value)}`; // <-- Use formatRupees here
           }
         }
       }

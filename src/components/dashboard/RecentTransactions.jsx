@@ -1,6 +1,6 @@
 import React from 'react';
-import { ArrowUpRight, ArrowDownRight, DollarSign } from 'lucide-react';
-import { formatDate } from '../../utils/helpers';
+import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { formatDate, formatRupees } from '../../utils/helpers';
 
 const RecentTransactions = ({ transactions }) => {
   // Show only the 5 most recent transactions
@@ -46,9 +46,10 @@ const RecentTransactions = ({ transactions }) => {
                   ? 'text-success-600 dark:text-success-400' 
                   : 'text-danger-600 dark:text-danger-400'
               }`}>
-                <DollarSign size={14} className="mr-0.5" />
+                <span className="mr-0.5" style={{fontSize: 16}}>₹</span>
                 <span className="font-medium">
-                  {transaction.type === 'credit' ? '+' : '-'}{transaction.amount.toFixed(2)}
+                  {transaction.type === 'credit' ? '+' : '-'}
+                  {formatRupees(transaction.amount)}
                 </span>
               </div>
             </div>

@@ -100,7 +100,7 @@ const TransactionForm = ({ transaction, categories, onSubmit, onCancel }) => {
 
       <div className="form-group">
         <label htmlFor="amount" className="label">
-          Amount ($)
+          Amount (₹)
         </label>
         <input
           type="number"

@@ -14,7 +14,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-import { formatCurrency } from '../utils/helpers';
+import { formatRupees } from '../utils/helpers';
 import { Calendar, TrendingUp, PieChart, BarChart3 } from 'lucide-react';
 
 ChartJS.register(
@@ -153,6 +153,11 @@ const Reports = () => {
         bodyColor: isDarkMode ? '#d1d5db' : '#374151',
         borderColor: isDarkMode ? '#6b7280' : '#e5e7eb',
         borderWidth: 1,
+        callbacks: {
+          label: function(context) {
+            return `${context.dataset.label}: ${formatRupees(context.parsed.y || context.parsed)}`;
+          }
+        }
       }
     },
     scales: {
@@ -167,7 +172,7 @@ const Reports = () => {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (value) => formatCurrency(value),
+          callback: (value) => formatRupees(value),
           color: isDarkMode ? '#9ca3af' : '#6b7280'
         },
         grid: {
@@ -199,7 +204,7 @@ const Reports = () => {
           label: function(context) {
             const label = context.label || '';
             const value = context.parsed || 0;
-            return `${label}: ${formatCurrency(value)}`;
+            return `${label}: ${formatRupees(value)}`;
           }
         }
       }
@@ -325,7 +330,7 @@ const Reports = () => {
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {formatCurrency(category.total)}
+                        {formatRupees(category.total)}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
                         {category.count} transactions
@@ -374,17 +379,17 @@ const Reports = () => {
                           {months[item.month - 1]} {item.year}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-success-600 dark:text-success-400 transition-colors duration-300">
-                          {formatCurrency(credit)}
+                          {formatRupees(credit)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-danger-600 dark:text-danger-400 transition-colors duration-300">
-                          {formatCurrency(debit)}
+                          {formatRupees(debit)}
                         </td>
                         <td className={`px-6 py-4 whitespace-nowrap text-sm text-right font-medium transition-colors duration-300 ${
                           net >= 0 
                             ? 'text-success-600 dark:text-success-400' 
                             : 'text-danger-600 dark:text-danger-400'
                         }`}>
-                          {formatCurrency(net)}
+                          {formatRupees(net)}
                         </td>
                       </tr>
                     );

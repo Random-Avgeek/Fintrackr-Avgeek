@@ -1,5 +1,6 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
+import { formatRupees } from '../../utils/helpers';
 
 const BalanceCard = ({ totalCredit, totalDebit, balance }) => {
   return (
@@ -12,8 +13,7 @@ const BalanceCard = ({ totalCredit, totalDebit, balance }) => {
           </div>
         </div>
         <div className="flex items-center text-2xl font-bold text-success-600 dark:text-success-400 transition-colors duration-300">
-          <DollarSign className="h-6 w-6 mr-1" />
-          {totalCredit.toFixed(2)}
+          {formatRupees(totalCredit)}
         </div>
       </div>
 
@@ -25,8 +25,7 @@ const BalanceCard = ({ totalCredit, totalDebit, balance }) => {
           </div>
         </div>
         <div className="flex items-center text-2xl font-bold text-danger-600 dark:text-danger-400 transition-colors duration-300">
-          <DollarSign className="h-6 w-6 mr-1" />
-          {totalDebit.toFixed(2)}
+          {formatRupees(totalDebit)}
         </div>
       </div>
 
@@ -34,7 +33,8 @@ const BalanceCard = ({ totalCredit, totalDebit, balance }) => {
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors duration-300">Current Balance</h3>
           <div className="bg-primary-100 dark:bg-primary-900/40 p-2 rounded-full transition-colors duration-300">
-            <DollarSign className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+            {/* You can add a rupee icon here if you want */}
+            <span className="h-5 w-5 text-primary-600 dark:text-primary-400 text-xl">₹</span>
           </div>
         </div>
         <div className={`flex items-center text-2xl font-bold transition-colors duration-300 ${
@@ -42,8 +42,7 @@ const BalanceCard = ({ totalCredit, totalDebit, balance }) => {
             ? 'text-primary-600 dark:text-primary-400' 
             : 'text-danger-600 dark:text-danger-400'
         }`}>
-          <DollarSign className="h-6 w-6 mr-1" />
-          {balance.toFixed(2)}
+          {formatRupees(balance)}
         </div>
       </div>
     </div>
